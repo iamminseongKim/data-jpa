@@ -10,6 +10,10 @@ import static lombok.AccessLevel.*;
 @Getter @Setter
 @NoArgsConstructor(access = PROTECTED)
 @ToString(of = {"id", "username", "age"})
+@NamedQuery(
+        name="Member.findByUsername",
+        query = "select m from Member m where m.username = :username"
+)
 public class Member {
 
     @Id @GeneratedValue
@@ -18,6 +22,10 @@ public class Member {
     private String username;
     private int age;
 
+    public Member(String username, int age) {
+        this.username = username;
+        this.age = age;
+    }
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "team_id")
