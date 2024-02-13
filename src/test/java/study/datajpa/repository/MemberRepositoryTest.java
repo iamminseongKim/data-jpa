@@ -4,6 +4,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.dto.MemberDto;
@@ -171,6 +174,36 @@ class MemberRepositoryTest {
         Optional<Member> aaa2 = memberRepository.findOptionalByUsername("AAA");
         //then
 
+    }
+
+    @Test
+    public void paging() throws Exception {
+        //given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 10));
+        memberRepository.save(new Member("member3", 10));
+        memberRepository.save(new Member("member4", 10));
+        memberRepository.save(new Member("member5", 10));
+        memberRepository.save(new Member("member6", 10));
+
+        // 페이징 해주는 객체
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "username"));
+        int age = 10;
+
+        //when
+        //long totalCount = memberRepository.totalCount(age); 이것도 필요 없다. totalCount 도 같이 날린다.
+        Page<Member> pages = memberRepository.findByAge(age, pageRequest);
+        Page<MemberDto> toMap = pages.map(m -> new MemberDto(m.getId(), m.getUsername(), null));
+
+        //then
+        List<Member> content = pages.getContent();
+
+        assertThat(content.size()).isEqualTo(3);    // 가져온 데이터 수
+        assertThat(pages.getTotalElements()).isEqualTo(6);        // 총 데이터 수
+        assertThat(pages.getNumber()).isEqualTo(0);     // 시작 번호가 0 인가
+        assertThat(pages.getTotalPages()).isEqualTo(2); // 전체 페이지가 2 페이지인가
+        assertThat(pages.isFirst()).isTrue();    // 이게 첫 번째 페이지 인가.
+        assertThat(pages.hasNext()).isTrue();   // 다음 페이지가 있는가?
     }
     
 }
