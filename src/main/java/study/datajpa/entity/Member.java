@@ -14,7 +14,7 @@ import static lombok.AccessLevel.*;
         name="Member.findByUsername",
         query = "select m from Member m where m.username = :username"
 )
-public class Member {
+public class Member extends BaseByEntity {
 
     @Id @GeneratedValue
     @Column(name = "member_id")

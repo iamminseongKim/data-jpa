@@ -254,4 +254,58 @@ class MemberRepositoryTest {
         }
     }
 
+    @Test
+    public void queryHint() throws Exception {
+        //given
+        Member member1 = memberRepository.save(new Member("member1", 10));
+        em.flush(); // 인서트
+        em.clear(); // 영속성 컨텍스트 날림
+        //when
+        Member findMember = memberRepository.findById(member1.getId()).get();
+        findMember.setUsername("member2");
+        //then
+
+        em.flush(); // 업데이트 (변경감지)
+    }
+
+    @Test
+    public void queryHint2() throws Exception {
+        //given
+        Member member1 = memberRepository.save(new Member("member1", 10));
+        em.flush(); // 인서트
+        em.clear(); // 영속성 컨텍스트 날림
+        //when
+        Member findMember = memberRepository.findReadOnlyByUsername("member1");
+        findMember.setUsername("member2");
+        //then
+
+        em.flush(); // 업데이트 (변경감지)
+    }
+
+    @Test
+    public void lockTest() throws Exception {
+        //given
+        Member member1 = memberRepository.save(new Member("member1", 10));
+        em.flush(); // 인서트
+        em.clear(); // 영속성 컨텍스트 날림
+        //when
+        List<Member> result = memberRepository.findLockByUsername("member1");
+        //then
+        for (Member member : result) {
+            System.out.println(member);
+        }
+
+    }
+
+    @Test
+    public void callCustom() throws Exception {
+        //given
+        List<Member> result = memberRepository.findMemberCustom();
+        //when
+
+        //then
+
+    }
+
+
 }
